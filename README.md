@@ -1,4 +1,4 @@
-# Hybrid Quantum–Classical CNNs on CIFAR-100
+# ⚛️ Hybrid Quantum–Classical CNNs on CIFAR-100
 
 This repository contains deterministic experiments on CIFAR-100 with a ResNet-34 backbone, comparing:
 
@@ -9,9 +9,11 @@ This repository contains deterministic experiments on CIFAR-100 with a ResNet-34
 All experiments reuse the same train/validation split, data transforms, optimizer and learning-rate schedule to enable a fair comparison.
 
 
-## 1. Methods
+## 1.🔬 Methods
 
 ### 1.1 Baseline: Deterministic ResNet-34
+
+**Script:** `cifar100_baseline.py`
 
 - Backbone: `torchvision.models.resnet34`, ImageNet initialization.  
 - Input: 3-channel RGB, standard CIFAR-style augmentations (RandomResizedCrop, RandAugment, RandomHorizontalFlip).  
@@ -75,7 +77,7 @@ Phase B (fusion):
 
 
 
-## 2. Results 
+## 📊 2. Results 
 
 Baseline ResNet-34	~0.829	Deterministic baseline
 
@@ -87,7 +89,7 @@ So far, the main observation is that small quantum or quantum-inspired modules c
 but also do not trivially yield a large accuracy improvement under this controlled setup.
 
 
-## 3. Environment
+## ⚙️ 3. Environment
 
 conda create -n qml-cifar python=3.11
 
@@ -102,11 +104,15 @@ pip install tqdm pillow
 DLfunctions.py (containing train_model) is available in the Python path.
 
 
-## 4. Notes and Extensions
+## 🧭 4. Notes and Extensions
 
 Both hybrid variants are deliberately close to the baseline in terms of parameter count and training setup, to isolate the effect of the quantum components.
 
 The current implementation uses simulation on classical hardware.
 
 The circuits and dataflow are structured to be portable to real quantum backends, subject to device constraints.
+
+## ✨ Contributing 
+If you'd like to contribute to this project, feel free to open an issue or submit a pull request.
+
 
