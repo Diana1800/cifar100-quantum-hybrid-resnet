@@ -6,7 +6,7 @@ This repository contains deterministic experiments on CIFAR-100 with a ResNet-34
 2. **Quantum Feature Maps (5-channel hybrid)** – quantum-inspired descriptors precomputed per image and injected as additional channels.  
 3. **Quantum Head (last-layer fusion)** – a variational quantum circuit on top of the backbone features, fused with the classical logits via a learnable scalar gate.
 
-All experiments reuse the **same train/validation split**, data transforms, optimizer and learning-rate schedule to enable a fair comparison.
+All experiments reuse the same train/validation split, data transforms, optimizer and learning-rate schedule to enable a fair comparison.
 
 
 ## 1. Methods
@@ -26,20 +26,20 @@ All experiments reuse the **same train/validation split**, data transforms, opti
 
 ### 1.2 Quantum Feature Maps (5-Channel Hybrid)
 
-**Script:** `cifar100_quantum_hybrid_deterministic.py`
+**Script:** `cifar100_quantum_channels.py`
 
 Idea:
 
-- For each image, extract a small vector of **N_QUBITS** scalars from a grayscale summary of the image.
+- For each image, downsample to extract a small vector of N_QUBITS scalars.
 - Feed this vector into two small circuits:
   - `qnode_edge`: ring-entangled circuit intended to capture edge-like correlations.
   - `qnode_tex`: star-entangled circuit with additional phase interactions for texture-like correlations.
 - Each circuit outputs an N_QUBITS-dimensional descriptor.  
 - The descriptors are mapped to small 2D grids and resized to the input resolution, yielding two additional channels:
   - `RGB + QE + QT → 5 × H × W`.
-- The first ResNet convolution (`conv1`) is expanded from 3 to 5 input channels, with the weights of the extra channels initialized as the mean over the RGB filters.
+- The first ResNet convolution (`conv1`) is expanded from 3 to 5 input channels.
 
-The quantum descriptors are **precomputed once** and cached to:
+The quantum descriptors are precomputed once and cached to:
 
 - `train_q_edge*.npz`, `train_q_tex*.npz`  
 - `val_q_edge*.npz`, `val_q_tex*.npz`  
@@ -49,16 +49,14 @@ The quantum descriptors are **precomputed once** and cached to:
 
 ### 1.3 Quantum Head with Learnable Fusion (Last-Layer Hybrid)
 
-**Script:** `cifar100_hybrid_lastQ_fair_alpha_det.py`
+**Script:** `cifar100_hybrid_Qhead.py`
 
 Idea:
 
-- Keep the ResNet-34 backbone and classical classifier **identical** to the baseline (same number of features, same final linear layer).
-- Add a **parallel quantum branch** on top of the backbone features:
-  1. Global pooled features `feats ∈ ℝ^{C}`.  
-  2. Linear projection `feats → ℝ^{N_QUBITS}`.  
-  3. Variational quantum circuit (`AngleEmbedding` + `StronglyEntanglingLayers`).  
-  4. Linear mapping back to `num_classes`.
+- Keep the ResNet-34 backbone and classical classifier identical to the baseline (same number of features, same final linear layer).
+- Add a parallel quantum branch on top of the backbone features: 
+  1. Variational quantum circuit (`AngleEmbedding` + `StronglyEntanglingLayers`) - with learnble weights
+  2. Linear mapping back to `num_classes`.
 
 - Fuse the classical and quantum logits via a learnable scalar gate:
   
@@ -78,17 +76,15 @@ Phase B (fusion):
 
 α is monitored once per epoch to see how strong the quantum contribution becomes.
 
-The quantum head is implemented using PennyLane’s TorchLayer on top of a lightning.qubit device, running on CPU in these experiments.
 
 
 ## 2. Results 
 
-Example CIFAR-100 runs (ResNet-34, deterministic setup):
-
-Model	Top-1 Test Accuracy	Notes
 Baseline ResNet-34	~0.829	Deterministic baseline
+
 Hybrid 5-channel (quantum features)	~0.829–0.83	Very close to baseline
-Hybrid last-layer quantum head	~0.83	
+
+Hybrid last-layer quantum head	~0.8279	
 
 So far, the main observation is that small quantum or quantum-inspired modules can be integrated without destroying baseline performance, 
 but also do not trivially yield a large accuracy improvement under this controlled setup.
@@ -97,10 +93,13 @@ but also do not trivially yield a large accuracy improvement under this controll
 ## 3. Environment
 
 conda create -n qml-cifar python=3.11
+
 conda activate qml-cifar
 
 pip install torch torchvision torchaudio
+
 pip install pennylane pennylane-lightning
+
 pip install tqdm pillow
 
 DLfunctions.py (containing train_model) is available in the Python path.
@@ -111,12 +110,6 @@ DLfunctions.py (containing train_model) is available in the Python path.
 Both hybrid variants are deliberately close to the baseline in terms of parameter count and training setup, to isolate the effect of the quantum components.
 
 The current implementation uses simulation on classical hardware.
+
 The circuits and dataflow are structured to be portable to real quantum backends, subject to device constraints.
 
-Possible extensions:
-
-Varying N_QUBITS, circuit depth, and ansatz type.
-
-Different fusion schemes (vector-valued gates instead of a scalar α).
-
-Evaluating architectures on other datasets (e.g., MalNet, medical imaging).
