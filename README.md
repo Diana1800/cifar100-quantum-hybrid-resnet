@@ -9,7 +9,7 @@ This repository contains deterministic experiments on CIFAR-100 with a ResNet-34
 All experiments reuse the same train/validation split, data transforms, optimizer and learning-rate schedule to enable a fair comparison.
 
 
-## 1.🔬 Methods
+## 🔬 1. Methods
 
 ### 1.1 Baseline: Deterministic ResNet-34
 
