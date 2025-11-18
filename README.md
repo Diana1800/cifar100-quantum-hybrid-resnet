@@ -19,9 +19,6 @@ All experiments reuse the same train/validation split, data transforms, optimize
 - Loss: Cross-entropy with label smoothing.  
 - All seeds and CUDA flags set for deterministic behaviour.
 
-> Baseline training script is compatible with the same split file:
-> `runs/cifar100_baseline_det/split_idx_cifar100.npz`.
-
 ---
 
 ### 1.2 Quantum Feature Maps (5-Channel Hybrid)
