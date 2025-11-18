@@ -49,7 +49,7 @@ MAX_LR_ONECYCLE = 7e-4
 LABEL_SMOOTH   = 0.05
 
 # Quantum feature map configuration
-N_QUBITS           = 5
+N_QUBITS           = 4
 QUANTUM_DEPTH      = 1
 QUANTUM_IMAGE_SIZE = 28
 PRECOMPUTE_QFEATS  = True
