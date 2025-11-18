@@ -19,7 +19,7 @@ All experiments reuse the same train/validation split, data transforms, optimize
 - Input: 3-channel RGB, standard CIFAR-style augmentations (RandomResizedCrop, RandAugment, RandomHorizontalFlip).  
 - Optimizer: `AdamW` with `OneCycleLR`.  
 - Loss: Cross-entropy with label smoothing.  
-- All seeds and CUDA flags set for deterministic behaviour.
+- All seeds and CUDA flags set for deterministic behavior.
 
 ---
 
@@ -54,7 +54,7 @@ Idea:
 
 - Keep the ResNet-34 backbone and classical classifier identical to the baseline (same number of features, same final linear layer).
 - Add a parallel quantum branch on top of the backbone features: 
-  1. Variational quantum circuit (`AngleEmbedding` + `StronglyEntanglingLayers`) - with learnble weights
+  1. Variational quantum circuit (`AngleEmbedding` + `StronglyEntanglingLayers`) - with learnable weights
   2. Linear mapping back to `num_classes`.
 
 - Fuse the classical and quantum logits via a learnable scalar gate:
